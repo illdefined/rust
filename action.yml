@@ -8,6 +8,11 @@ inputs:
 
   components:
     description: Extra components to install, separated by space
+    default: clippy
+
+  tools:
+    description: Extra tools to install via Cargo, separated by space
+    default: cargo-audit
 
 runs:
   using: composite
@@ -40,7 +45,7 @@ runs:
     - name: Configure Rust toolchain cache
       uses: actions/cache@v4
       with:
-        key: rustup-${{ runner.os }}-${{ runner.arch }}-${{ inputs.toolchain }}${{ inputs.components && '-' }}${{ inputs.components }}
+        key: rustup-${{ runner.os }}-${{ runner.arch }}-${{ inputs.toolchain }}-${{ inputs.components }}-${{ inputs.tools }}
         path: |
           ~/.rustup/toolchains
     
@@ -172,4 +177,8 @@ runs:
         
         if [[ -n '${{ inputs.components }}' ]]; then
           rustup component add ${{ inputs.components }}
+        fi
+        
+        if [[ -n '${{ inputs.tools }}' ]]; then
+          cargo install --target "${targets[0]}" ${{ inputs.tools }}
         fi
