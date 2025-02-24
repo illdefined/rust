@@ -157,6 +157,8 @@ runs:
           targets=(x86_64-pc-windows-gnu x86_64-pc-windows-msvc);;
         esac
         
+        echo "RUST_TARGET_NATIVE=${targets[0]}" >>"${GITHUB_ENV}"
+        
         printf "\n\n[build]\ntarget =[\n" >>~/.cargo/config.toml
         for target in "${targets[@]}"; do
           printf "  '%s',\n" "${target}" >>~/.cargo/config.toml
@@ -167,7 +169,7 @@ runs:
         rustup set auto-self-update disable
         rustup toolchain install '${{ inputs.toolchain }}'
         rustup target add "${targets[@]}"
-
+        
         if [[ -n '${{ inputs.components }}' ]]; then
           rustup component add ${{ inputs.components }}
         fi
